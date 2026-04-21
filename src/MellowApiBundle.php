@@ -61,11 +61,13 @@ final class MellowApiBundle extends AbstractBundle
 
     public function build(ContainerBuilder $container): void
     {
+        /*
         $container->addCompilerPass(
             DoctrineOrmMappingsPass::createXmlMappingDriver(
                 [__DIR__ . '/../config/doctrine/mapping' => 'MellowApiBundle\Model'],
             )
         );
+        */
     }
 
     public function loadExtension(
