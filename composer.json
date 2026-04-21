@@ -1,0 +1,32 @@
+{
+    "name": "glengemann/mellow-api-bundle",
+    "description": "Mellow API bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "MellowApiBundle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Guillermo Lengemann Garcés",
+            "email": "guillermo.lengemann@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "glengemann/php-mellow-api": "dev-main"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/glengemann/php-mellow-api"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}
