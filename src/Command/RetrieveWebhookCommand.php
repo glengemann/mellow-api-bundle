@@ -50,7 +50,6 @@ class RetrieveWebhookCommand extends Command
         $output->writeln(sprintf('Last Triggered: %s', $response['lastTriggered'] ?? 'N/A'));
         $output->writeln(sprintf('Last Error: %s', $response['lastError'] ?? 'N/A'));
 
-
         return Command::SUCCESS;
     }
 }
