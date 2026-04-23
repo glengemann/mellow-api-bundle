@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Mellow\Store\FileTokenStorage;
 use MellowApiBundle\ClientFactory;
 use MellowApiBundle\Command\CreateWebhookCommand;
+use MellowApiBundle\Command\Lookup\ListServiceAttributesCommand;
+use MellowApiBundle\Command\Lookup\ListServicesCommand;
 use MellowApiBundle\Command\RemoveWebhookCommand;
 use MellowApiBundle\Command\RetrieveWebhookCommand;
 use MellowApiBundle\Command\Task\RetrieveTaskCommand;
@@ -13,9 +16,16 @@ use MellowApiBundle\Command\Task\RetrieveTaskCommand;
 return static function (ContainerConfigurator $container): void {
     $container->services()
         ->set('mellow_api.client', ClientFactory::class)
-        ->arg('$url', param('mellow.url'))
+        ->args([
+            param('mellow.url'),
+            param('mellow.username'),
+            param('mellow.password'),
+        ])
+
+        ->set('mellow.token_storage.file', FileTokenStorage::class)
 
         ->alias(ClientFactory::class, 'mellow_api.client')
+        ->alias(FileTokenStorage::class, 'mellow.token_storage.file')
 
         ->set('mellow_api.webhook_retrieve_command', RetrieveWebhookCommand::class)
             ->args([
@@ -35,6 +45,17 @@ return static function (ContainerConfigurator $container): void {
             ->tag('console.command')
 
         ->set('mellow_api.task_retrieve_command', RetrieveTaskCommand::class)
+            ->args([
+                service('mellow_api.client'),
+            ])
+            ->tag('console.command')
+
+        ->set('mellow_api.lookup_list_service_command', ListServicesCommand::class)
+            ->args([
+                service('mellow_api.client'),
+            ])
+            ->tag('console.command')
+        ->set('mellow_api.lookup_list_service_attributes_command', ListServiceAttributesCommand::class)
             ->args([
                 service('mellow_api.client'),
             ])
