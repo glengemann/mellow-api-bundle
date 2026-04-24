@@ -36,6 +36,10 @@ final class MellowApiBundle extends AbstractBundle
                             ->isRequired()
                             ->cannotBeEmpty()
                         ->end()
+                        ->scalarNode('token_storage')
+                            ->isRequired()
+                            ->cannotBeEmpty()
+                        ->end()
                     ->end()
                 ->end()
             ->end()
@@ -80,6 +84,7 @@ final class MellowApiBundle extends AbstractBundle
         $builder->setParameter('mellow.url', $config['api']['url']);
         $builder->setParameter('mellow.username', $config['api']['username']);
         $builder->setParameter('mellow.password', $config['api']['password']);
+        $builder->setParameter('mellow.token_storage', $config['api']['token_storage']);
         $builder->setParameter('mellow.webhook_url', $config['webhook']['url']);
         $builder->setParameter('mellow.webhook_secret', $config['webhook']['secret']);
     }
