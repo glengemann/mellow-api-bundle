@@ -39,7 +39,7 @@ class CreateWebhookCommand extends Command
             ->status(Status::ENABLED)
             ->url($this->webhookUrl);
 
-        $response = $client->weebhook()->create($parameters);
+        $response = $client->webhook()->create($parameters);
 
         return Command::SUCCESS;
     }

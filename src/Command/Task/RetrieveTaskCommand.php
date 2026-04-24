@@ -37,9 +37,6 @@ class RetrieveTaskCommand extends Command
 
         $client = $this->clientFactory->create();
 
-        $apiToken = '';
-        $client->authenticate($apiToken);
-
         $response = $client->task()->retrieve($uuid);
 
         $output->writeln('Task Response:');

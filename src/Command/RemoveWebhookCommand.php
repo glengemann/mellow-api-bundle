@@ -32,7 +32,7 @@ class RemoveWebhookCommand extends Command
         $apiToken = '';
         $client->authenticate($apiToken);
 
-        $response = $client->weebhook()->remove();
+        $response = $client->webhook()->remove();
 
         return Command::SUCCESS;
     }

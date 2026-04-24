@@ -41,7 +41,7 @@ class RetrieveWebhookCommand extends Command
          *     lastError: ?string
          * } $response
          */
-        $response = $client->weebhook()->retrive();
+        $response = $client->webhook()->retrive();
 
         $output->writeln('Webhook details:');
         $output->writeln(sprintf('URL: %s', $response['url']));
