@@ -8,6 +8,7 @@ use Mellow\Store\FileTokenStorage;
 use Mellow\Store\Psr6TokenStore;
 use Mellow\Store\TokenStoreInterface;
 use MellowApiBundle\ClientFactory;
+use MellowApiBundle\Command\Company\ListCompanyCommand;
 use MellowApiBundle\Command\CreateWebhookCommand;
 use MellowApiBundle\Command\Lookup\ListServiceAttributesCommand;
 use MellowApiBundle\Command\Lookup\ListServicesCommand;
@@ -70,5 +71,11 @@ return static function (ContainerConfigurator $container): void {
                 service('mellow_api.client'),
             ])
             ->tag('console.command')
+
+        ->set('mellow_api.company_list_command', ListCompanyCommand::class)
+        ->args([
+            service('mellow_api.client'),
+        ])
+        ->tag('console.command')
     ;
 };
