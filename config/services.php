@@ -14,6 +14,7 @@ use MellowApiBundle\Command\Lookup\ListServiceAttributesCommand;
 use MellowApiBundle\Command\Lookup\ListServicesCommand;
 use MellowApiBundle\Command\RemoveWebhookCommand;
 use MellowApiBundle\Command\RetrieveWebhookCommand;
+use MellowApiBundle\Command\Task\ListTaskCommand;
 use MellowApiBundle\Command\Task\RetrieveTaskCommand;
 
 return static function (ContainerConfigurator $container): void {
@@ -56,6 +57,11 @@ return static function (ContainerConfigurator $container): void {
             ->tag('console.command')
 
         ->set('mellow_api.task_retrieve_command', RetrieveTaskCommand::class)
+            ->args([
+                service('mellow_api.client'),
+            ])
+            ->tag('console.command')
+        ->set('mellow_api.list_task_command', ListTaskCommand::class)
             ->args([
                 service('mellow_api.client'),
             ])
