@@ -14,6 +14,7 @@ class ClientFactory
     public function __construct(
         private readonly string $url,
         private readonly string $username,
+        #[\SensitiveParameter]
         private readonly string $password,
         private readonly TokenStoreInterface $tokenStorage,
     ) {
@@ -21,15 +22,7 @@ class ClientFactory
 
     public function create(?int $companyId = null): Client
     {
-        $httpClient = HttpClient::create([
-            'max_redirects' => 7,
-            'base_uri' => $this->url,
-        ]);
-        $httplugClient = new HttplugClient($httpClient);
-
-        $client = Client::createWithHttpClient(
-            $httplugClient,
-        );
+        $client = $this->buildClient();
 
         if (null !== $companyId) {
             $client->setCompany($companyId);
@@ -59,5 +52,18 @@ class ClientFactory
         $this->tokenStorage->save($credentials->token, $credentials->refreshToken);
 
         return $credentials->token;
+    }
+
+    public function buildClient(): Client
+    {
+        $httpClient = HttpClient::create([
+            'max_redirects' => 7,
+            'base_uri' => $this->url,
+        ]);
+        $httplugClient = new HttplugClient($httpClient);
+
+        return Client::createWithHttpClient(
+            $httplugClient,
+        );
     }
 }
