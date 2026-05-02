@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MellowApiBundle;
 
 use Mellow\Client;
+use Mellow\HttpClient\Plugin\RetryAuthenticationPlugin;
 use Mellow\Store\TokenStoreInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\HttplugClient;
@@ -30,6 +31,11 @@ class ClientFactory
 
         $token = $this->resolveToken($client);
         $client->authenticate($token);
+
+        $client->withRetryAuthentication(new RetryAuthenticationPlugin(
+            $this->tokenStorage,
+            fn () => $this->resolveToken($client),
+        ));
 
         return $client;
     }
