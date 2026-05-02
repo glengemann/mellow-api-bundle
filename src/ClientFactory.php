@@ -19,7 +19,7 @@ class ClientFactory
     ) {
     }
 
-    public function create(): Client
+    public function create(?int $companyId = null): Client
     {
         $httpClient = HttpClient::create([
             'max_redirects' => 7,
@@ -31,8 +31,11 @@ class ClientFactory
             $httplugClient,
         );
 
-        $token = $this->resolveToken($client);
+        if (null !== $companyId) {
+            $client->setCompany($companyId);
+        }
 
+        $token = $this->resolveToken($client);
         $client->authenticate($token);
 
         return $client;
