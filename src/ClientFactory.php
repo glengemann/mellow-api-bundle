@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MellowApiBundle;
 
+use Mellow\Api\Login\Response\Credential;
 use Mellow\Client;
 use Mellow\HttpClient\Plugin\RetryAuthenticationPlugin;
 use Mellow\Store\TokenStoreInterface;
@@ -34,7 +35,7 @@ class ClientFactory
 
         $client->withRetryAuthentication(new RetryAuthenticationPlugin(
             $this->tokenStorage,
-            fn () => $this->resolveToken($client),
+            fn () => $this->login($client),
         ));
 
         return $client;
@@ -53,11 +54,19 @@ class ClientFactory
             return $credentials->token;
         }
 
-        $credentials = $client->login()
-            ->login($this->username, $this->password);
-        $this->tokenStorage->save($credentials->token, $credentials->refreshToken);
+        $credentials = $this->login($client);
 
         return $credentials->token;
+    }
+
+    private function login(Client $client): Credential
+    {
+        $credentials = $client->login()
+            ->login($this->username, $this->password);
+
+        $this->tokenStorage->save($credentials->token, $credentials->refreshToken);
+
+        return $credentials;
     }
 
     public function buildClient(): Client

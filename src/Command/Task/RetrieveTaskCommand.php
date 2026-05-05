@@ -35,7 +35,8 @@ class RetrieveTaskCommand extends Command
     {
         $uuid = $input->getArgument('uuid');
 
-        $client = $this->clientFactory->create();
+        $companyId = null;
+        $client = $this->clientFactory->create($companyId);
 
         $response = $client->task()->retrieve($uuid);
 

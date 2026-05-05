@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MellowApiBundle\Command\Task;
 
 use Mellow\Api\Task\Parameter\FilterParameters;
+use Mellow\Api\TaskStatus;
 use MellowApiBundle\ClientFactory;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -61,11 +62,11 @@ class ListTaskCommand extends Command
 
             $table->addRow([
                 $task->id,
-                substr($task->uuid, 0, 8) . '...',
-                substr($task->title, 0, 40),
+                $task->uuid,
+                $task->title,
                 $task->price,
                 $currency,
-                $task->state,
+                sprintf('%s (%d)', TaskStatus::tryFrom($task->state)->name, $task->state),
                 $deadline,
             ]);
         }
