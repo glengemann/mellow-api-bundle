@@ -35,7 +35,7 @@ class ClientFactory
 
         $client->withRetryAuthentication(new RetryAuthenticationPlugin(
             $this->tokenStorage,
-            fn () => $this->login($client),
+            fn (): string => $this->login($client)->token,
         ));
 
         return $client;
