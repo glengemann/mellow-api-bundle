@@ -9,6 +9,7 @@ use MellowApiBundle\ClientFactory;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -24,9 +25,21 @@ class ListServiceAttributesCommand extends Command
         parent::__construct();
     }
 
+    protected function configure(): void
+    {
+        $this
+            ->addArgument('companyId', InputArgument::OPTIONAL, 'Company ID to filter tasks by');
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $client = $this->clientFactory->create();
+        /** @var string|null $companyId */
+        $companyId = $input->getArgument('companyId');
+        if (null !== $companyId) {
+            $companyId = (int) $companyId;
+        }
+
+        $client = $this->clientFactory->create($companyId);
 
         $response = $client->lookup()->serviceAttributes();
 
