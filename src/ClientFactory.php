@@ -31,12 +31,17 @@ class ClientFactory
         }
 
         $token = $this->resolveToken($client);
-        $client->authenticate($token);
+        $authPlugin = $client->authenticate($token);
 
-        $client->withRetryAuthentication(new RetryAuthenticationPlugin(
+        $authClient = $this->buildClient()->login();
+        $retryAuthenticationPlugin = new RetryAuthenticationPlugin(
+            $authPlugin,
+            $authClient,
             $this->tokenStorage,
-            fn (): string => $this->login($client)->token,
-        ));
+            $this->username,
+            $this->password,
+        );
+        $client->withRetryAuthentication($retryAuthenticationPlugin);
 
         return $client;
     }
