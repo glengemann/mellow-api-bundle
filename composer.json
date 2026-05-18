@@ -16,12 +16,12 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "glengemann/php-mellow-api": "dev-main"
+        "glengemann/mellow-api": "dev-main"
     },
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/glengemann/php-mellow-api"
+            "url": "https://github.com/glengemann/mellow-api"
         }
     ],
     "config": {
