@@ -47,7 +47,7 @@ class ListTaskCommand extends Command
         $parameters = (new FilterParameters());
         $response = $client->task()->list($parameters);
 
-        if (true === empty($response)) {
+        if ([] === $response->items) {
             $output->writeln('<comment>No tasks found.</comment>');
 
             return Command::SUCCESS;
@@ -56,9 +56,10 @@ class ListTaskCommand extends Command
         $table = new Table($output);
         $table->setHeaders(['ID', 'UUID', 'Title', 'Price', 'Currency', 'State', 'Deadline']);
 
-        foreach ($response as $task) {
+        foreach ($response->items as $task) {
             $deadline = $task->deadline['triggerDate'] ?? 'N/A';
             $currency = $task->currency['currency'] ?? 'N/A';
+            $state = TaskStatus::tryFrom($task->state);
 
             $table->addRow([
                 $task->id,
@@ -66,12 +67,20 @@ class ListTaskCommand extends Command
                 $task->title,
                 $task->price,
                 $currency,
-                sprintf('%s (%d)', TaskStatus::tryFrom($task->state)->name, $task->state),
+                sprintf('%s (%d)', $state?->name ?? 'UNKNOWN', $task->state),
                 $deadline,
             ]);
         }
 
         $table->render();
+        $output->writeln(sprintf(
+            'Page %d/%d | Per page: %d | Count: %d | Total: %d',
+            $response->pagination->page,
+            $response->pagination->pages,
+            $response->pagination->perPage,
+            $response->pagination->count,
+            $response->pagination->total,
+        ));
 
         return Command::SUCCESS;
     }
