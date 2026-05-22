@@ -15,6 +15,7 @@ use MellowApiBundle\Command\CreateWebhookCommand;
 use MellowApiBundle\Command\Login\LoginCommand;
 use MellowApiBundle\Command\Lookup\ListServiceAttributesCommand;
 use MellowApiBundle\Command\Lookup\ListServicesCommand;
+use MellowApiBundle\Command\Profile\RetrievingProfileCommand;
 use MellowApiBundle\Command\RemoveWebhookCommand;
 use MellowApiBundle\Command\RetrieveWebhookCommand;
 use MellowApiBundle\Command\Task\ListTaskCommand;
@@ -99,6 +100,12 @@ return static function (ContainerConfigurator $container): void {
         ->tag('console.command')
 
         ->set('mellow_api.company_balance_command', GetCompanyBalanceCommand::class)
+        ->args([
+            service('mellow_api.client'),
+        ])
+        ->tag('console.command')
+
+        ->set('mellow_api.profile_command', RetrievingProfileCommand::class)
         ->args([
             service('mellow_api.client'),
         ])
