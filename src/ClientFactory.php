@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace MellowApiBundle;
 
-use Mellow\Api\Login\Response\Credential;
+use Mellow\Api\Login\Response\CredentialResponse;
+use Mellow\Api\Login\Response\LoginResponse;
 use Mellow\Client;
 use Mellow\HttpClient\Plugin\RetryAuthenticationPlugin;
 use Mellow\Store\TokenStoreInterface;
@@ -64,10 +65,15 @@ class ClientFactory
         return $credentials->token;
     }
 
-    private function login(Client $client): Credential
+    private function login(Client $client): LoginResponse
     {
+        /** @var CredentialResponse $credentials */
         $credentials = $client->login()
             ->login($this->username, $this->password);
+
+        if (true === $credentials->requiresTwoFactor()) {
+            throw new \RuntimeException('Two-factor authentication is required');
+        }
 
         $this->tokenStorage->save($credentials->token, $credentials->refreshToken);
 
@@ -85,5 +91,15 @@ class ClientFactory
         return Client::createWithHttpClient(
             $httplugClient,
         );
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
     }
 }

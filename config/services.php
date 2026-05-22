@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Mellow\LoginInterface;
 use Mellow\Store\FileTokenStorage;
 use Mellow\Store\Psr6TokenStore;
 use Mellow\Store\TokenStoreInterface;
 use MellowApiBundle\ClientFactory;
 use MellowApiBundle\Command\Company\ListCompanyCommand;
 use MellowApiBundle\Command\CreateWebhookCommand;
+use MellowApiBundle\Command\Login\LoginCommand;
 use MellowApiBundle\Command\Lookup\ListServiceAttributesCommand;
 use MellowApiBundle\Command\Lookup\ListServicesCommand;
 use MellowApiBundle\Command\RemoveWebhookCommand;
 use MellowApiBundle\Command\RetrieveWebhookCommand;
 use MellowApiBundle\Command\Task\ListTaskCommand;
 use MellowApiBundle\Command\Task\RetrieveTaskCommand;
+use MellowApiBundle\Login\LoginService;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
@@ -25,9 +28,6 @@ return static function (ContainerConfigurator $container): void {
         ])
         ->alias(TokenStoreInterface::class, 'mellow.token_storage.psr6')
 
-        //->set('mellow.token_storage.file', FileTokenStorage::class)
-        //->alias(TokenStoreInterface::class, 'mellow.token_storage.file')
-
         ->set('mellow_api.client', ClientFactory::class)
         ->args([
             param('mellow.url'),
@@ -36,8 +36,21 @@ return static function (ContainerConfigurator $container): void {
             service('mellow.token_storage.psr6'),
         ])
 
+        ->set('mellow_api.login_service', LoginService::class)
+        ->args([
+            service('mellow_api.client'),
+            service('mellow.token_storage.psr6'),
+        ])
+        ->alias(LoginInterface::class, 'mellow_api.login_service')
+
         ->alias(ClientFactory::class, 'mellow_api.client')
         ->alias(FileTokenStorage::class, 'mellow.token_storage.file')
+
+        ->set('mellow_api.login_command', LoginCommand::class)
+        ->args([
+            service('mellow_api.login_service'),
+        ])
+        ->tag('console.command')
 
         ->set('mellow_api.webhook_retrieve_command', RetrieveWebhookCommand::class)
             ->args([
