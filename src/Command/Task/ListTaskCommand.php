@@ -34,7 +34,11 @@ class ListTaskCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('companyId', InputArgument::OPTIONAL, 'Company ID to filter tasks by')
+            ->addArgument(
+                'companyId',
+                InputArgument::OPTIONAL,
+                'Company ID to filter tasks by',
+            )
             ->addOption('page', null, InputOption::VALUE_OPTIONAL, 'Page number', '1')
             ->addOption('size', null, InputOption::VALUE_OPTIONAL, 'Items per page', '20');
     }

@@ -33,8 +33,9 @@ class ListCompanyCommand extends Command
 
         $client = $this->clientFactory->create();
         $response = $client->company()->list();
+        $companies = $response->items;
 
-        if (empty($response)) {
+        if ([] === $companies) {
             $io->warning('No companies found.');
 
             return Command::SUCCESS;
@@ -45,7 +46,7 @@ class ListCompanyCommand extends Command
         $table = new Table($output);
         $table->setHeaders(['ID', 'UUID', 'Company Name', 'Brand Name', 'Country', 'Currency', 'Status', 'Default', 'Active']);
 
-        foreach ($response as $company) {
+        foreach ($companies as $company) {
             $table->addRow([
                 $company->id,
                 $company->uuid,
@@ -61,7 +62,12 @@ class ListCompanyCommand extends Command
 
         $table->render();
 
-        $io->info(sprintf('%d company(ies) found.', count($response)));
+        $io->info(sprintf(
+            '%d company(ies) found (page %d of %d).',
+            $response->pagination->total,
+            $response->pagination->page,
+            $response->pagination->pages,
+        ));
 
         return Command::SUCCESS;
     }
