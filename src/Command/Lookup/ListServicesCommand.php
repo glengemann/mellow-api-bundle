@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MellowApiBundle\Command\Lookup;
 
 use Mellow\Api\Lookup\Parameter\ServiceAttributesParameters;
+use Mellow\Api\Lookup\Response\ServiceCollectionResponse;
 use Mellow\Api\Lookup\Response\ServiceResponse;
 use MellowApiBundle\ClientFactory;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -32,13 +33,14 @@ class ListServicesCommand extends Command
         $parameters = (new ServiceAttributesParameters())
             ->page(1)
             ->size(20);
+        /** @var ServiceCollectionResponse $response */
         $response = $client->lookup()->services($parameters);
 
         $table = new Table($output);
         $table->setHeaders(['ID', 'Title (EN)', 'Title Doc (EN)']);
 
         /** @var ServiceResponse $service */
-        foreach ($response as $service) {
+        foreach ($response->items as $service) {
             $table->addRow([
                 $service->id,
                 $service->titleEn,
