@@ -12,7 +12,9 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'mellow:lookup:services',
@@ -26,13 +28,24 @@ class ListServicesCommand extends Command
         parent::__construct();
     }
 
+    protected function configure(): void
+    {
+        $this
+            ->addOption('page', null, InputOption::VALUE_OPTIONAL, 'Page number', '1')
+            ->addOption('size', null, InputOption::VALUE_OPTIONAL, 'Items per page', '20');
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $io = new SymfonyStyle($input, $output);
         $client = $this->clientFactory->create();
 
+        $page = max(1, (int) $input->getOption('page'));
+        $size = max(1, (int) $input->getOption('size'));
+
         $parameters = (new ServiceAttributesParameters())
-            ->page(1)
-            ->size(20);
+            ->page($page)
+            ->size($size);
         /** @var ServiceCollectionResponse $response */
         $response = $client->lookup()->services($parameters);
 
@@ -49,6 +62,14 @@ class ListServicesCommand extends Command
         }
 
         $table->render();
+        $io->text(sprintf(
+            'Page %d/%d | Per page: %d | Count: %d | Total: %d',
+            $response->pagination->page,
+            $response->pagination->pages,
+            $response->pagination->perPage,
+            $response->pagination->count,
+            $response->pagination->total,
+        ));
 
         return Command::SUCCESS;
     }
