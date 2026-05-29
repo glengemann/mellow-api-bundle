@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappi
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
 final class MellowApiBundle extends AbstractBundle
@@ -39,6 +40,14 @@ final class MellowApiBundle extends AbstractBundle
                         ->scalarNode('token_storage')
                             ->isRequired()
                             ->cannotBeEmpty()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('cache')
+                    ->children()
+                        ->scalarNode('pool')
+                            ->defaultValue('cache.app')
+                            ->info('The cache pool service ID to use for token storage')
                         ->end()
                     ->end()
                 ->end()
@@ -87,5 +96,10 @@ final class MellowApiBundle extends AbstractBundle
         $builder->setParameter('mellow.token_storage', $config['api']['token_storage']);
         $builder->setParameter('mellow.webhook_url', $config['webhook']['url']);
         $builder->setParameter('mellow.webhook_secret', $config['webhook']['secret']);
+
+        $cachePool = $config['cache']['pool'] ?? 'cache.app';
+
+        $builder->getDefinition('mellow.token_storage.psr6')
+            ->setArgument(0, new Reference($cachePool));
     }
 }
