@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MellowApiBundle\Command\Freelancer;
 
-
+use Mellow\Api\Freelancer\Parameter\FreelancerFilter;
 use Mellow\Api\Freelancer\Parameter\FreelancerListParameters;
 use MellowApiBundle\ClientFactory;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -12,6 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -51,6 +52,31 @@ class ListFreelancerCommand extends Command
                 InputArgument::OPTIONAL,
                 'Items per page',
                 '20',
+            )
+            ->addOption(
+                'is-verified',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Filter by verified status (true or false)',
+                null,
+            )
+            ->addOption(
+                'is-invite-sent',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Filter by invite sent status (true or false)'
+            )
+            ->addOption(
+                'date-invited-from',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Filter from date (Y-m-d)'
+            )
+            ->addOption(
+                'date-invited-to',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Filter to date (Y-m-d)'
             );
     }
 
@@ -73,9 +99,36 @@ class ListFreelancerCommand extends Command
                 ->page($page)
                 ->size($size);
 
+            $filter = new FreelancerFilter();
+            $hasFilter = false;
+
+            if (null !== $value = $input->getOption('is-verified')) {
+                $filter->isVerified((bool) $value);
+                $hasFilter = true;
+            }
+
+            if (null !== $value = $input->getOption('is-invite-sent')) {
+                $filter->isInviteEmailSent((bool) $value);
+                $hasFilter = true;
+            }
+
+            if (null !== $value = $input->getOption('date-invited-from')) {
+                $filter->dateInvitedFrom(new \DateTimeImmutable($value));
+                $hasFilter = true;
+            }
+
+            if (null !== $value = $input->getOption('date-invited-to')) {
+                $filter->dateInvitedTo(new \DateTimeImmutable($value));
+                $hasFilter = true;
+            }
+
+            if (true === $hasFilter) {
+                $parameters->filter($filter);
+            }
+
             $freelancers = $api->freelancer()->list($parameters);
 
-            if (0 > count($freelancers->items)) {
+            if (0 === count($freelancers->items)) {
                 $io->warning('No freelancers found.');
 
                 return Command::SUCCESS;
