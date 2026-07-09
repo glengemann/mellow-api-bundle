@@ -37,7 +37,7 @@ class ListFreelancerCommand extends Command
             ->addArgument(
                 'companyId',
                 InputArgument::OPTIONAL,
-                'Company ID to filter tasks by',
+                'Company ID to filter candidates by',
             )
             ->addOption(
                 'page',

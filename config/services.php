@@ -13,6 +13,7 @@ use MellowApiBundle\Command\Company\GetCompanyBalanceCommand;
 use MellowApiBundle\Command\Company\ListCompanyCommand;
 use MellowApiBundle\Command\CreateWebhookCommand;
 use MellowApiBundle\Command\Freelancer\ListFreelancerCommand;
+use MellowApiBundle\Command\Freelancer\RetrieveFreelancerCommand;
 use MellowApiBundle\Command\Login\LoginCommand;
 use MellowApiBundle\Command\Lookup\ListServiceAttributesCommand;
 use MellowApiBundle\Command\Lookup\ListServicesCommand;
@@ -113,6 +114,12 @@ return static function (ContainerConfigurator $container): void {
         ->tag('console.command')
 
         ->set('mellow_api.freelancer_list_command', ListFreelancerCommand::class)
+        ->args([
+            service('mellow_api.client'),
+        ])
+        ->tag('console.command')
+
+        ->set('mellow_api.freelancer_retrieve_command', RetrieveFreelancerCommand::class)
         ->args([
             service('mellow_api.client'),
         ])

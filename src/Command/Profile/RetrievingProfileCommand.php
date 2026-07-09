@@ -45,7 +45,7 @@ class RetrievingProfileCommand extends Command
 
     private function formatValue(mixed $value): string
     {
-        if ($value === null) {
+        if (null === $value) {
             return 'null';
         }
 
@@ -56,7 +56,7 @@ class RetrievingProfileCommand extends Command
         if (is_array($value)) {
             $encoded = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-            return $encoded === false ? '[unserializable array]' : $encoded;
+            return false === $encoded ? '[unserializable array]' : $encoded;
         }
 
         return (string) $value;

@@ -39,8 +39,20 @@ class ListTaskCommand extends Command
                 InputArgument::OPTIONAL,
                 'Company ID to filter tasks by',
             )
-            ->addOption('page', null, InputOption::VALUE_OPTIONAL, 'Page number', '1')
-            ->addOption('size', null, InputOption::VALUE_OPTIONAL, 'Items per page', '20');
+            ->addOption(
+                'page',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Page number',
+                '1',
+            )
+            ->addOption(
+                'size',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Items per page',
+                '20',
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -104,13 +116,9 @@ class ListTaskCommand extends Command
 
             $action = $io->choice(
                 'Pagination',
-                ['next', 'previous', 'goto', 'quit'],
+                ['next', 'previous', 'goto', 'quit', 'refresh'],
                 'next',
             );
-
-            if ('quit' === $action) {
-                return Command::SUCCESS;
-            }
 
             if ('next' === $action) {
                 $page = min($response->pagination->pages, $response->pagination->page + 1);
@@ -119,6 +127,14 @@ class ListTaskCommand extends Command
 
             if ('previous' === $action) {
                 $page = max(1, $response->pagination->page - 1);
+                continue;
+            }
+
+            if ('quit' === $action) {
+                return Command::SUCCESS;
+            }
+
+            if ('refresh' === $action) {
                 continue;
             }
 
